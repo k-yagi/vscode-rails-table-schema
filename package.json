@@ -14,8 +14,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "rails-table-schema.helloWorld",
-        "title": "Hello World"
+        "command": "rails-table-schema.showTableSchema",
+        "title": "Rails Table Schema: show table schema"
       }
     ]
   },
