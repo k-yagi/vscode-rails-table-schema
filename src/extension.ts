@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as pluralize from 'pluralize';
+import * as fn from './functions';
 
 export function activate(context: vscode.ExtensionContext) {
 	const goToSchemaCommand = vscode.commands.registerCommand('rails-table-schema.goToSchema', async () => {
@@ -10,7 +10,8 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		const document = editor.document;
-		const modelName = getModelNameFromPath(document.fileName);
+		const relativePath = vscode.workspace.asRelativePath(document.fileName, false);
+		const modelName = fn.getModelNameFromPath(relativePath);
 		if (!modelName) {
 			return;
 		}
@@ -43,7 +44,7 @@ export function activate(context: vscode.ExtensionContext) {
 export function deactivate() { }
 
 function findSchemaLine(document: vscode.TextDocument, modelName: string): number | null {
-	const tableName = getTableNameFromModelName(modelName);
+	const tableName = fn.getTableNameFromModelName(modelName);
 	const createTableRegex = new RegExp(`create_table "${tableName}"`);
 
 	for (let lineIndex = 0; lineIndex < document.lineCount; lineIndex++) {
@@ -54,28 +55,4 @@ function findSchemaLine(document: vscode.TextDocument, modelName: string): numbe
 	}
 
 	return null;
-}
-
-function getModelNameFromPath(filePath: string): string | null {
-	const relativePath = vscode.workspace.asRelativePath(filePath, false);
-	const match = relativePath.match(/app\/models\/(.+)\.rb/);
-	if (!match) {
-		return null;
-	}
-
-	const namespacePath = match[1];
-	return namespacePath.split('/').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('::');
-}
-
-function getTableNameFromModelName(modelName: string): string {
-	const parts = modelName.split('::');
-	const lastPart = parts.pop();
-	if (!lastPart) {
-		return '';
-	}
-
-	const pluralizedLastPart = pluralize.plural(lastPart);
-	parts.push(pluralizedLastPart);
-
-	return parts.join('_').toLowerCase();
 }
