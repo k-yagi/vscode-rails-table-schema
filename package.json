@@ -3,6 +3,11 @@
   "displayName": "Rails Table Schema",
   "description": "Displays the table schema of the model",
   "version": "0.1.0",
+  "author": "k-yagi",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/k-yagi/vscode-rails-table-schema.git"
+  },
   "engines": {
     "vscode": ">=1.77.0",
     "node": "18.x"
